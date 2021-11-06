@@ -1,14 +1,25 @@
 package com.example.honmon.Models;
 
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.IndexDirection;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+
 // import java.util.Collection;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+// import javax.persistence.Column;
+// import javax.persistence.Entity;
+// import javax.persistence.GeneratedValue;
+// import javax.persistence.GenerationType;
+// import javax.persistence.Id;
 // import javax.persistence.Table;
-import javax.persistence.Table;
+// import javax.persistence.Table;
+
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 // import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.security.core.GrantedAuthority;
@@ -16,29 +27,34 @@ import javax.persistence.Table;
 // import org.springframework.security.crypto.password.PasswordEncoder;
 
 
-@Entity
-@Table(name = "users")
+// @Entity
+// @Table(name = "users")
+@Document(collection = "user")
 public class User {
     
-    @Id
-    @Column(name = "user_id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+    // @Id
+    // @Column(name = "user_id")
+    // @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private String id;
 
-    @Column(nullable = false, unique = true)
+    // @Column(nullable = false, unique = true)
+    @Indexed(unique = true, direction = IndexDirection.DESCENDING, dropDups = true)
     private String username;
 
     private boolean enabled;
     private String role;
     private String password;
-    
+
+    @DBRef
+    private Set<Role> roles;
+
     
 
     public User() {}
 
     public User(String username, String password, String role) {
         this.username = username;
-        this.password = password;
+        this.password = (new BCryptPasswordEncoder()).encode(password);
         this.role = role;
         this.enabled = true;
     }
@@ -60,7 +76,8 @@ public class User {
 
     public void setPassword(String password)
     {
-        this.password =  password; //new BCryptPasswordEncoder().encode(password);
+        // this.password =  password; //new BCryptPasswordEncoder().encode(password);
+        this.password =  new BCryptPasswordEncoder().encode(password);
         // $2a$10$G/JoyY1NBYNoKx9GHglaReaAHwdQyMIDLxVWDWH4dBk/S2th55zaK
     }
 
@@ -72,6 +89,14 @@ public class User {
     public void setRole(String role)
     {
         this.role = role;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+    
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     public boolean getEnabled()

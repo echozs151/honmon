@@ -3,18 +3,19 @@ package com.example.honmon.storage;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-public interface StorageService {
+public interface StorageService<T> {
 
 	void init();
 
-	void store(MultipartFile file);
+	String store(MultipartFile file);
 
-	Stream<Path> loadAll();
+	Stream<T> loadAll();
 
-	Path load(String filename);
+	T load(String filename) throws IOException;
 
 	Resource loadAsResource(String filename);
 

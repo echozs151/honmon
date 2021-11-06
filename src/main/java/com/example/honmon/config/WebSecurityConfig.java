@@ -1,12 +1,10 @@
 package com.example.honmon.config;
 
 
-import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -26,12 +24,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     public UserDetailsService userDetailsService;
 
-    @Bean
-    public PasswordEncoder getPasswordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
-        // return new BCryptPasswordEncoder();
-    }
+    // @Bean
+    // public PasswordEncoder getPasswordEncoder() {
+    //     return NoOpPasswordEncoder.getInstance();
+    //     // return new BCryptPasswordEncoder();
+    // }
 
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     // @Bean
     // public DaoAuthenticationProvider authenticationProvider() {

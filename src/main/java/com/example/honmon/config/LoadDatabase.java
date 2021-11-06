@@ -1,8 +1,10 @@
 package com.example.honmon.config;
 
 import com.example.honmon.Models.Book;
+import com.example.honmon.Models.Settings;
 import com.example.honmon.Models.User;
 import com.example.honmon.Repo.BookRepository;
+import com.example.honmon.Repo.SettingsRepository;
 import com.example.honmon.Repo.UserRepository;
 
 import org.slf4j.Logger;
@@ -19,14 +21,24 @@ class LoadDatabase {
   @Bean
   CommandLineRunner initDatabase(
       BookRepository repository,
-      UserRepository userRepository
+      UserRepository userRepository,
+      SettingsRepository settingsRepository
       ) {
 
-    return args -> {
-      log.info("Preloading " + repository.save(new Book("Bilbo Baggins", "burglar")));
-      log.info("Preloading " + repository.save(new Book("Frodo Baggins", "thief")));
-      log.info("Preloading " + userRepository.save(new User("admin", "admin", "ROLE_ADMIN")));
-      log.info("Preloading " + userRepository.save(new User("user", "user", "ROLE_USER")));
-    };
+      Settings dbInitCheck = settingsRepository.findByKey("db_init");
+
+      if (dbInitCheck == null) {
+        settingsRepository.save(new Settings("db_init", "1"));
+
+        return args -> {
+          log.info("Preloading " + repository.save(new Book("Bilbo Baggins", "burglar")));
+          log.info("Preloading " + repository.save(new Book("Frodo Baggins", "thief")));
+          log.info("Preloading " + userRepository.save(new User("admin", "admin", "ROLE_ADMIN")));
+          log.info("Preloading " + userRepository.save(new User("user", "user", "ROLE_USER")));
+      };
+      }
+      return null;
+      
+      
   }
 }

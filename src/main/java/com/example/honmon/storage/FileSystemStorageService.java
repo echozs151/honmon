@@ -15,7 +15,7 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 @Service
-public class FileSystemStorageService implements StorageService {
+public class FileSystemStorageService implements StorageService<Path> {
 
 	private final Path rootLocation;
 
@@ -25,12 +25,13 @@ public class FileSystemStorageService implements StorageService {
 	}
 
 	@Override
-	public void store(MultipartFile file) {
+	public String store(MultipartFile file) {
 		try {
 			if (file.isEmpty()) {
 				throw new StorageException("Failed to store empty file " + file.getOriginalFilename());
 			}
 			Files.copy(file.getInputStream(), this.rootLocation.resolve(file.getOriginalFilename()));
+			return "fileId";
 		} catch (IOException e) {
 			throw new StorageException("Failed to store file " + file.getOriginalFilename(), e);
 		}

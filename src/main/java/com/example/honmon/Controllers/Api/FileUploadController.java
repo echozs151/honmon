@@ -1,13 +1,18 @@
-package com.example.honmon.Controllers;
+package com.example.honmon.Controllers.Api;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.stream.Collectors;
 
+import com.example.honmon.Models.Book;
+import com.example.honmon.Repo.BookRepository;
+import com.example.honmon.storage.StoredFile;
 import com.example.honmon.storage.StorageFileNotFoundException;
 import com.example.honmon.storage.StorageService;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -22,29 +27,35 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
-@Controller
-@RequestMapping("upload")
+@RestController
+@RequestMapping("api/upload")
 public class FileUploadController {
 
-	private final StorageService storageService;
+	private final StorageService<StoredFile> storageService;
+	private static final Logger log = LoggerFactory.getLogger(FileUploadController.class);
+
 
 	@Autowired
-	public FileUploadController(StorageService storageService) {
+	private BookRepository bookRepository;
+
+	@Autowired
+	public FileUploadController(StorageService<StoredFile> storageService) {
 		this.storageService = storageService;
 	}
 
 	@GetMapping()
 	public String listUploadedFiles(Model model) throws IOException {
 
-		model.addAttribute("files", storageService.loadAll().map(
-				path -> MvcUriComponentsBuilder.fromMethodName(FileUploadController.class,
-						"serveFile", path.getFileName().toString()).build().toUri().toString()+"/preview")
-				.collect(Collectors.toList()));
+		// model.addAttribute("files", storageService.loadAll().map(
+		// 		path -> MvcUriComponentsBuilder.fromMethodName(FileUploadController.class,
+		// 				"serveFile", path.getFileName().toString()).build().toUri().toString()+"/preview")
+		// 		.collect(Collectors.toList()));
 
 		return "uploadForm";
 	}
@@ -69,13 +80,23 @@ public class FileUploadController {
 
 	@PostMapping()
 	public String handleFileUpload(@RequestParam("file") MultipartFile file,
-			RedirectAttributes redirectAttributes) {
+			RedirectAttributes redirectAttributes) throws IOException {
 
-		storageService.store(file);
-		redirectAttributes.addFlashAttribute("message",
-				"You successfully uploaded " + file.getOriginalFilename() + "!");
+		String fileRef = storageService.store(file);
+		log.info(fileRef);
 
-		return "redirect:/upload";
+
+		StoredFile uploadedBook = storageService.load(fileRef);
+		
+		Book book = new Book();
+		book.setAuthor("test");
+		book.setTitle("test title");
+		book.setBook(uploadedBook);
+
+		bookRepository.save(book);
+		
+
+		return fileRef;
 	}
 
 	@ExceptionHandler(StorageFileNotFoundException.class)
