@@ -16,24 +16,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Honmon.  If not, see <https://www.gnu.org/licenses/>.
 */
-package com.example.honmon.storage;
+package com.example.honmon.Repo;
+import com.example.honmon.Models.Settings;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-@ConfigurationProperties("storage")
-public class StorageProperties {
-
-	/**
-	 * Folder location for storing files
-	 */
-	private String location = "upload-dir";
-
-	public String getLocation() {
-		return location;
-	}
-
-	public void setLocation(String location) {
-		this.location = location;
-	}
-
+public interface SettingsRepository extends MongoRepository<Settings, Long> {
+    Settings findByKey(String key);
 }
