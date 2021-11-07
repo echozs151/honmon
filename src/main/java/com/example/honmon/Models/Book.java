@@ -23,21 +23,15 @@ package com.example.honmon.Models;
 // import javax.persistence.Id;
 // import javax.persistence.Table;
 
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.io.IOException;
 
-import com.example.honmon.storage.MongoStorageService;
 import com.example.honmon.storage.StorageService;
 import com.example.honmon.storage.StoredFile;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.web.multipart.MultipartFile;
 
-import lombok.Getter;
 
 // @Entity
 // @Table(name = "books")
@@ -48,6 +42,7 @@ public class Book { // extends AbstractEntity {
     private String title;
     private String author;
     @DBRef() StoredFile book;
+    @DBRef() StoredFile thumbnail;
 
     private StorageService<StoredFile> storageService;
 
@@ -107,6 +102,21 @@ public class Book { // extends AbstractEntity {
 		StoredFile uploadedBook = storageService.load(fileRef);
         this.book = uploadedBook;
         return uploadedBook;
+    }
+
+    public void setThumbnail(StoredFile thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    public StoredFile getThumbnail() {
+        return thumbnail;
+    }
+
+    public StoredFile storeThumbnail(MultipartFile file ) throws IOException {
+        String fileRef = storageService.store(file);
+		StoredFile uploadedThumbnail = storageService.load(fileRef);
+        this.thumbnail = uploadedThumbnail;
+        return uploadedThumbnail;
     }
     
 }

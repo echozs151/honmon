@@ -18,6 +18,7 @@ along with Honmon.  If not, see <https://www.gnu.org/licenses/>.
 */
 package com.example.honmon.Controllers.Api;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +33,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.system.ApplicationTemp;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -74,11 +77,16 @@ public class BookController {
     }
 
     @PostMapping("new")
-    Map<String, String> newBookWithFile(@RequestParam("model") String model, @RequestParam(value = "file", required = false) MultipartFile file ) throws IOException {
+    Map<String, String> newBookWithFile(
+        @RequestParam("model") String model,
+        @RequestParam(value = "file", required = false) MultipartFile file,
+        @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail
+    ) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         Book newBook = mapper.readValue(model, Book.class);
         newBook.setStorageService(storageService);
         newBook.storeBook(file);
+        newBook.storeThumbnail(thumbnail);
         bookRepository.save(newBook);
         return Map.of("status", "success");
     }
@@ -95,6 +103,22 @@ public class BookController {
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(loadFile.getFileType() ))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + loadFile.getFilename() + "\"")
+                .body(new ByteArrayResource(loadFile.getFile()));
+    }
+
+    @GetMapping("thumbnail/{id}")
+    public ResponseEntity<ByteArrayResource> thumbnail(@PathVariable String id) throws IOException {
+        Book book = bookRepository.findById(id);
+        ApplicationTemp tmp = new ApplicationTemp();
+        File tmpDir = tmp.getDir();
+        StoredFile loadFile = storageService.load(book.getThumbnail().getId().toString());
+
+        var imgFile = new ClassPathResource("image/sid.jpg");
+        ResponseEntity.ok().contentType(MediaType.parseMediaType(loadFile.getFileType()));
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(loadFile.getFileType() ))
+                // .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + loadFile.getFilename() + "\"")
                 .body(new ByteArrayResource(loadFile.getFile()));
     }
     

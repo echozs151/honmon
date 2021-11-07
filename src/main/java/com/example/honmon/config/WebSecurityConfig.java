@@ -81,6 +81,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/admin").hasRole("ADMIN")
             .antMatchers("/user").hasAnyRole("ADMIN", "USER")
             .and().formLogin();
+        
+        http.authorizeRequests().antMatchers("/resource/**").permitAll();
 
             // .anyRequest().permitAll().and().csrf().disable();
             // .antMatchers("/users").permitAll()
