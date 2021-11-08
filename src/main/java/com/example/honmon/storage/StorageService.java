@@ -22,6 +22,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
@@ -30,6 +31,8 @@ public interface StorageService<T> {
 	void init();
 
 	String store(MultipartFile file);
+
+	String storeBytes(InputStream input, String name, String contentType);
 
 	Stream<T> loadAll();
 

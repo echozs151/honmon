@@ -34,9 +34,13 @@ public class ResourceServeController {
     @GetMapping("book-thumbnail/{id}")
     public void getImage(HttpServletResponse response, @PathVariable String id) throws IOException {
         Book book = bookRepository.findById(id);
-        var thumbnail = storageService.load(book.getThumbnail().getId().toString());
-        response.setContentType(MediaType.IMAGE_PNG_VALUE);
-        StreamUtils.copy(new ByteArrayInputStream(thumbnail.getFile()), response.getOutputStream());
+        if (book.getThumbnail() != null) {
+            var thumbnail = storageService.load(book.getThumbnail().getId().toString());
+            if (thumbnail != null) {
+                response.setContentType(MediaType.IMAGE_PNG_VALUE);
+                StreamUtils.copy(new ByteArrayInputStream(thumbnail.getFile()), response.getOutputStream());    
+            }
+        }
     }
 
     @GetMapping("book-preview/{id}")

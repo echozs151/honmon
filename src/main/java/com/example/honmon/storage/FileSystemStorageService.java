@@ -26,6 +26,7 @@ import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -102,4 +103,10 @@ public class FileSystemStorageService implements StorageService<Path> {
 			throw new StorageException("Could not initialize storage", e);
 		}
 	}
+
+	@Override
+    public String storeBytes(InputStream input, String name, String contentType) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
