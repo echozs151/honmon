@@ -21,7 +21,6 @@ package com.example.honmon.Models;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 
 // import javax.persistence.Entity;
 // import javax.persistence.GeneratedValue;
@@ -34,7 +33,6 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import com.example.honmon.storage.MongoStorageService;
 import com.example.honmon.storage.StorageService;
 import com.example.honmon.storage.StoredFile;
 
@@ -93,12 +91,14 @@ public class Book { // extends AbstractEntity {
     }
 
     public String getBookId() {
-        return this.book.getId().toString();
+        this.bookId = this.book.getId().toString();
+        return this.bookId;
     }
 
     public String getThumbnailId() {
         if (this.thumbnail != null) {
-            return this.thumbnail.getId().toString();
+            this.thumbnailId = this.thumbnail.getId().toString();
+            return this.thumbnailId;
         } else {
             return null;
         }

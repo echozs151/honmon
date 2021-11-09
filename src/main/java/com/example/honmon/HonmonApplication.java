@@ -18,29 +18,23 @@ along with Honmon.  If not, see <https://www.gnu.org/licenses/>.
 */
 package com.example.honmon;
 
-import com.example.honmon.Repo.UserRepository;
 import com.example.honmon.storage.StorageProperties;
 import com.example.honmon.storage.StorageService;
-import com.mongodb.client.MongoClients;
+import com.example.honmon.storage.StoredFile;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 
 @SpringBootApplication
 @EnableConfigurationProperties(StorageProperties.class)
 public class HonmonApplication {
 
-	@Autowired
-  	private UserRepository repository;
+	// @Autowired
+  	// private UserRepository repository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(HonmonApplication.class, args);
@@ -57,7 +51,7 @@ public class HonmonApplication {
 	// }
 
 	@Bean
-	CommandLineRunner init(StorageService storageService) {
+	CommandLineRunner init(StorageService<StoredFile> storageService) {
 		return (args) -> {
 			storageService.deleteAll();
 			storageService.init();

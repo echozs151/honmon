@@ -18,9 +18,7 @@ along with Honmon.  If not, see <https://www.gnu.org/licenses/>.
 */
 package com.example.honmon.Controllers.Api;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,14 +26,10 @@ import com.example.honmon.Models.Book;
 import com.example.honmon.Repo.BookRepository;
 import com.example.honmon.storage.StorageService;
 import com.example.honmon.storage.StoredFile;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.system.ApplicationTemp;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -109,11 +103,11 @@ public class BookController {
     @GetMapping("thumbnail/{id}")
     public ResponseEntity<ByteArrayResource> thumbnail(@PathVariable String id) throws IOException {
         Book book = bookRepository.findById(id);
-        ApplicationTemp tmp = new ApplicationTemp();
-        File tmpDir = tmp.getDir();
+        // ApplicationTemp tmp = new ApplicationTemp();
+        // File tmpDir = tmp.getDir();
         StoredFile loadFile = storageService.load(book.getThumbnail().getId().toString());
 
-        var imgFile = new ClassPathResource("image/sid.jpg");
+        // var imgFile = new ClassPathResource("image/sid.jpg");
         ResponseEntity.ok().contentType(MediaType.parseMediaType(loadFile.getFileType()));
 
         return ResponseEntity.ok()

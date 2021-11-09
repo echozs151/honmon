@@ -20,12 +20,9 @@ package com.example.honmon.Controllers.Api;
 
 import java.util.List;
 
-import com.example.honmon.Models.Book;
 import com.example.honmon.Models.User;
-import com.example.honmon.Repo.BookRepository;
 import com.example.honmon.Repo.UserRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
