@@ -65,7 +65,6 @@ public class MongoStorageService implements StorageService<StoredFile> {
             MessageDigest md = MessageDigest.getInstance("MD5");
             metadata.put("checksum", md.digest(file.getBytes()).toString());
         } catch (IOException | NoSuchAlgorithmException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
         }
 
@@ -74,7 +73,6 @@ public class MongoStorageService implements StorageService<StoredFile> {
             fileID = template.store(file.getInputStream(), file.getOriginalFilename(), file.getContentType(), metadata);
             return fileID.toString();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return "";
         }
@@ -94,14 +92,12 @@ public class MongoStorageService implements StorageService<StoredFile> {
 
     @Override
     public Stream<StoredFile> loadAll() {
-        // TODO Auto-generated method stub
         // return template.find(new Query(Criteria.where("_id").gt(0))).map(mapper -> {new LoadFile();});
         return null;
     }
 
     @Override
     public StoredFile load(String id) throws IOException {
-        // TODO Auto-generated method stub
         GridFSFile gridFSFile = template.findOne( new Query(Criteria.where("_id").is(id)) );
 
         StoredFile loadFile = new StoredFile();
@@ -124,7 +120,6 @@ public class MongoStorageService implements StorageService<StoredFile> {
 
     @Override
     public Resource loadAsResource(String filename) {
-        // TODO Auto-generated method stub
         return null;
     }
 

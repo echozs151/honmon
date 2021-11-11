@@ -31,4 +31,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface BookRepository extends MongoRepository<Book, Long> {
     Book findById(String id);
+    void deleteById(String id);
 }

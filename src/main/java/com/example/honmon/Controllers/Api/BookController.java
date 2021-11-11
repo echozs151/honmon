@@ -34,6 +34,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -89,6 +90,12 @@ public class BookController {
     public Book getBook(@PathVariable String id) {
         return bookRepository.findById(id);
     }
+
+    @DeleteMapping("{id}")
+    public void deleteBook(@PathVariable String id) {
+        bookRepository.deleteById(id);
+    }
+
 
     @GetMapping("download/{id}")
     public ResponseEntity<ByteArrayResource> downloadBook(@PathVariable String id) throws IOException {
