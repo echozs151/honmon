@@ -34,7 +34,7 @@ public class ResourceServeController {
         if (book.getThumbnail() != null) {
             var thumbnail = storageService.load(book.getThumbnail().getId().toString());
             if (thumbnail != null) {
-                response.setContentType(MediaType.IMAGE_PNG_VALUE);
+                response.setContentType(thumbnail.getFileType());
                 StreamUtils.copy(new ByteArrayInputStream(thumbnail.getFile()), response.getOutputStream());    
             }
         }
@@ -43,8 +43,14 @@ public class ResourceServeController {
     @GetMapping("book-preview/{id}")
     public void getBookPreview(HttpServletResponse response, @PathVariable String id) throws IOException {
         Book book = bookRepository.findById(id);
-        var thumbnail = storageService.load(book.getBook().getId().toString());
-        response.setContentType(MediaType.APPLICATION_PDF_VALUE);
-        StreamUtils.copy(new ByteArrayInputStream(thumbnail.getFile()), response.getOutputStream());
+        var fileRef = storageService.load(book.getBook().getId().toString());
+        response.setContentType(fileRef.getFileType());
+        StreamUtils.copy(new ByteArrayInputStream(fileRef.getFile()), response.getOutputStream());
+    }
+
+    @GetMapping("cbz-meta/{id}")
+    public Book getCbzFile(HttpServletResponse response, @PathVariable String id) throws IOException {
+        Book book = bookRepository.findById(id);
+        return book;
     }
 }

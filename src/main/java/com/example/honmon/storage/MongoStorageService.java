@@ -18,6 +18,7 @@ along with Honmon.  If not, see <https://www.gnu.org/licenses/>.
 */
 package com.example.honmon.storage;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
@@ -79,14 +80,22 @@ public class MongoStorageService implements StorageService<StoredFile> {
     }
 
     @Override
-    public String storeBytes(InputStream input, String name, String contentType) {
+    public String storeBytes(InputStream input, long length, String name, String contentType) {
         DBObject metadata = new BasicDBObject();
         try {
             metadata.put("fileSize", input.available());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Object fileID = template.store(input, name, contentType, metadata);
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            // metadata.put("checksum", md.digest(input.readAllBytes()).toString());
+        } catch (NoSuchAlgorithmException e1) {
+            e1.printStackTrace();
+        }
+
+        Object fileID;
+        fileID = template.store(input, name, contentType, metadata);
         return fileID.toString();
     }
 
@@ -126,6 +135,12 @@ public class MongoStorageService implements StorageService<StoredFile> {
     @Override
     public void deleteAll() {
         // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void delete(String id) {
+        template.delete(new Query(Criteria.where("_id").is(id)));
         
     }
     

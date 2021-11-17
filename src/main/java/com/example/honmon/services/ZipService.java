@@ -2,9 +2,9 @@ package com.example.honmon.services;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -23,7 +23,17 @@ public class ZipService {
         }
         zis.closeEntry();
         zis.close();
-    }   
+    }
+
+    public static void unzipRef(String filePath) {
+
+    }
+
+    public static ZipInputStream unzipRef(InputStream file) {
+        byte[] buffer = new byte[1024];
+        ZipInputStream zis = new ZipInputStream(file);
+        return zis;
+    }
 
     private static void zipEntryProcess(ZipEntry zipEntry, File destDir, ZipInputStream zis, byte[] buffer) throws IOException
     {

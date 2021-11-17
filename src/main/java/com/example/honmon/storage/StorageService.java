@@ -31,7 +31,7 @@ public interface StorageService<T> {
 
 	String store(MultipartFile file);
 
-	String storeBytes(InputStream input, String name, String contentType);
+	String storeBytes(InputStream input, long length, String name, String contentType);
 
 	Stream<T> loadAll();
 
@@ -40,5 +40,7 @@ public interface StorageService<T> {
 	Resource loadAsResource(String filename);
 
 	void deleteAll();
+
+	void delete(String filename);
 
 }

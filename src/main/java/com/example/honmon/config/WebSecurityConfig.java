@@ -89,6 +89,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             // .formLogin().permitAll()
             // .and()
             // .logout().permitAll().and().csrf().disable();
-
     }
+
+    // @Autowired
+	// public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+
+	// 	auth.inMemoryAuthentication().withUser(
+	// 			User.withDefaultPasswordEncoder().username("user").password("password").roles("USER").build());
+	// }
 }

@@ -105,7 +105,13 @@ public class FileSystemStorageService implements StorageService<Path> {
 	}
 
 	@Override
-    public String storeBytes(InputStream input, String name, String contentType) {
+    public String storeBytes(InputStream input, long length, String name, String contentType) {
         return null;
     }
+
+	@Override
+	public void delete(String filename) {
+		// TODO Auto-generated method stub
+		
+	}
 }

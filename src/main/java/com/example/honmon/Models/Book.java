@@ -29,17 +29,28 @@ import java.io.ByteArrayOutputStream;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.imageio.ImageIO;
 
+import com.example.honmon.services.ZipService;
 import com.example.honmon.storage.StorageService;
 import com.example.honmon.storage.StoredFile;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -54,6 +65,8 @@ public class Book { // extends AbstractEntity {
     private String category;
     private List<String> tags;
     private String description;
+    private String fileType;
+    private String fileExtension;
     @DBRef() StoredFile book;
     private String bookId;
     @DBRef() StoredFile thumbnail;
@@ -64,6 +77,22 @@ public class Book { // extends AbstractEntity {
     @Autowired
     public void setStorageService(StorageService<StoredFile> storageService) {
         this.storageService = storageService;
+    }
+
+    public String getFileExtension() {
+        return fileExtension;
+    }
+
+    public void setFileExtension(String fileExtension) {
+        this.fileExtension = fileExtension;
+    }
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
     }
 
     public List<String> getTags() {
@@ -167,20 +196,63 @@ public class Book { // extends AbstractEntity {
         return thumbnail;
     }
 
-    public StoredFile storeThumbnail(MultipartFile file ) throws IOException {
+    public StoredFile storeThumbnail(MultipartFile file, MediaType mediaType ) throws IOException {
         String fileRef = null;
         if (file == null) {
             // extract image from pdf document
-            InputStream documentStream = new ByteArrayInputStream(this.getBook().getFile());
-            PDDocument pdfDoc = PDDocument.load(documentStream);
-            PDFRenderer pdfRenderer = new PDFRenderer(pdfDoc);
-            BufferedImage img = pdfRenderer.renderImage(0);
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            ImageIO.write(img, "jpeg", os);
-            InputStream is = new ByteArrayInputStream(os.toByteArray());
-            fileRef = storageService.storeBytes(is, getTitle()+"_thumbnail", "image/jpeg");
-            pdfDoc.close();
-            
+            if (mediaType.equals(MediaType.APPLICATION_PDF)) {
+                InputStream documentStream = new ByteArrayInputStream(this.getBook().getFile());
+                PDDocument pdfDoc = PDDocument.load(documentStream);
+                PDFRenderer pdfRenderer = new PDFRenderer(pdfDoc);
+                BufferedImage img = pdfRenderer.renderImage(0);
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                ImageIO.write(img, "jpeg", os);
+                InputStream is = new ByteArrayInputStream(os.toByteArray());
+                fileRef = storageService.storeBytes(is, (long)is.available(), getTitle()+"_thumbnail", "image/jpeg");
+                pdfDoc.close();
+            }
+
+            if (mediaType.equals(MediaType.APPLICATION_OCTET_STREAM))
+            {
+                InputStream documentStream = new ByteArrayInputStream(this.getBook().getFile());
+                ZipInputStream zis = ZipService.unzipRef(documentStream);
+                ZipEntry zipEntry = zis.getNextEntry();
+                Pattern p = Pattern.compile("[_\\s\\-][0]*1\\.");
+                Matcher m;
+                while (zipEntry != null) {
+                    m = p.matcher(zipEntry.getName());
+                    if(m.find())
+                    {
+                        String ext = FilenameUtils.getExtension(zipEntry.getName());
+                        String contentType;
+                        ByteArrayOutputStream oStream =  new ByteArrayOutputStream();
+                        byte[] buffer = new byte[256];
+                        int len;
+                        while ((len = zis.read(buffer)) > 0) {
+                            oStream.write(buffer, 0, len);
+                        }
+                
+                        if (ext.equals("jpg") || ext.equals("jpeg")) {
+                            contentType = MediaType.IMAGE_JPEG_VALUE;
+                            fileRef = storageService.storeBytes(
+                                new ByteArrayInputStream(oStream.toByteArray()),
+                                zipEntry.getSize(),
+                                zipEntry.getName(),
+                                contentType
+                            );
+                        }
+
+                        if (ext.equals("png")) {
+
+                        }
+                        break;
+                    }
+                    zipEntry = zis.getNextEntry();
+                 }
+                
+                
+
+            }
             
         } else if(file != null) {
             fileRef = storageService.store(file);    
