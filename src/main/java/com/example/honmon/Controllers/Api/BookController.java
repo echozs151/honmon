@@ -19,8 +19,10 @@ along with Honmon.  If not, see <https://www.gnu.org/licenses/>.
 package com.example.honmon.Controllers.Api;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -146,36 +148,43 @@ public class BookController {
                 .body(new ByteArrayResource(loadFile.getFile()));
     }
 
-    @PostMapping("cbz-img/{id}")
-    public String getCbzFile(
+    @GetMapping("cbz-img/{id}/{filename}")
+    public ResponseEntity<ByteArrayResource> getCbzFile(
         @PathVariable String id,
-        @RequestBody Map<String, Object> body
+        @PathVariable String filename
     ) throws IOException {
-        final byte[] requestContent;
+        // final byte[] requestContent;
         // requestContent = IOUtils.toByteArray(request.getReader());
         Book book = bookRepository.findById(id);
         StoredFile file = storageService.load(book.getBook().getId().toString());
         ZipInputStream zis = ZipService.unzipRef(new ByteArrayInputStream(file.getFile()));
-        HashMap<String, String> list = new HashMap<String, String>();
-        List<String> fileList = new ArrayList<String>();
+        // HashMap<String, String> list = new HashMap<String, String>();
+        // List<String> fileList = new ArrayList<String>();
+        String fileNameDcd = new String(Base64.getDecoder().decode(filename));
         
         ZipEntry entry = zis.getNextEntry();
         // return "name.toString()";
         while(entry != null) {
-            if (entry.getName().equals(body.get("name").toString())) {
+            if (entry.getName().equals(fileNameDcd)) {
                 
+                ByteArrayOutputStream oStream =  new ByteArrayOutputStream();
+                byte[] buffer = new byte[256];
+                int len;
+                while ((len = zis.read(buffer)) > 0) {
+                    oStream.write(buffer, 0, len);
+                }
                 ResponseEntity.ok().contentType(MediaType.parseMediaType(MediaType.IMAGE_JPEG_VALUE));
 
                 return ResponseEntity.ok()
                         .contentType(MediaType.parseMediaType(MediaType.IMAGE_JPEG_VALUE ))
                         // .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + loadFile.getFilename() + "\"")
-                        .body(new ByteArrayResource(loadFile.getFile()));
+                        .body(new ByteArrayResource(oStream.toByteArray()));
             }
             
             entry = zis.getNextEntry();
         }
 
-        return body.get("name").toString();
+        return null;
     }
 
     @GetMapping("cbz-meta/{id}")
