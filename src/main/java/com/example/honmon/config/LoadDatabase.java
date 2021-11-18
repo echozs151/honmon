@@ -49,8 +49,8 @@ class LoadDatabase {
         settingsRepository.save(new Settings("db_init", "1"));
 
         return args -> {
-          log.info("Preloading " + repository.save(new Book("Bilbo Baggins", "burglar")));
-          log.info("Preloading " + repository.save(new Book("Frodo Baggins", "thief")));
+          // log.info("Preloading " + repository.save(new Book("Bilbo Baggins", "burglar")));
+          // log.info("Preloading " + repository.save(new Book("Frodo Baggins", "thief")));
           log.info("Preloading " + userRepository.save(new User("admin", "admin", "ROLE_ADMIN")));
           log.info("Preloading " + userRepository.save(new User("user", "user", "ROLE_USER")));
       };

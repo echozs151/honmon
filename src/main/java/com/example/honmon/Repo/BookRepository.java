@@ -18,10 +18,9 @@ along with Honmon.  If not, see <https://www.gnu.org/licenses/>.
 */
 package com.example.honmon.Repo;
 
-import java.util.List;
-
 import com.example.honmon.Models.Book;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 // import org.springframework.data.repository.CrudRepository;
 
@@ -30,6 +29,9 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 
 public interface BookRepository extends MongoRepository<Book, Long> {
+
+    @Cacheable("books")
     Book findById(String id);
+
     void deleteById(String id);
 }

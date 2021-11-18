@@ -16,6 +16,7 @@ import com.example.honmon.storage.StorageService;
 import com.example.honmon.storage.StoredFile;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,7 @@ public class ResourceServeController {
     @Autowired
     BookRepository bookRepository;
 
+    @Cacheable("book-thumbnail")
     @GetMapping("book-thumbnail/{id}")
     public void getImage(HttpServletResponse response, @PathVariable String id) throws IOException {
         Book book = bookRepository.findById(id);
@@ -55,12 +57,14 @@ public class ResourceServeController {
         StreamUtils.copy(new ByteArrayInputStream(fileRef.getFile()), response.getOutputStream());
     }
 
+    @Cacheable("cbz-meta")
     @GetMapping("cbz-meta/{id}")
     public Book getCbzFile(HttpServletResponse response, @PathVariable String id) throws IOException {
         Book book = bookRepository.findById(id);
         return book;
     }
 
+    @Cacheable("cbz-image")
     @GetMapping("cbz-img/{id}/{filename}")
     public ResponseEntity<ByteArrayResource> getCbzFile(
         @PathVariable String id,
