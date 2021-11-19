@@ -24,6 +24,7 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -68,7 +69,8 @@ public class ResourceServeController {
     @GetMapping("cbz-img/{id}/{filename}")
     public ResponseEntity<ByteArrayResource> getCbzFile(
         @PathVariable String id,
-        @PathVariable String filename
+        @PathVariable String filename,
+        @RequestParam(required = false) String progress
     ) throws IOException {
         // final byte[] requestContent;
         // requestContent = IOUtils.toByteArray(request.getReader());
@@ -90,6 +92,12 @@ public class ResourceServeController {
                 while ((len = zis.read(buffer)) > 0) {
                     oStream.write(buffer, 0, len);
                 }
+
+   
+                if (progress != null) {
+                    book.setProgress(progress);
+                    bookRepository.save(book);
+                }
                 ResponseEntity.ok().contentType(MediaType.parseMediaType(MediaType.IMAGE_JPEG_VALUE));
 
                 return ResponseEntity.ok()
@@ -100,6 +108,8 @@ public class ResourceServeController {
             
             entry = zis.getNextEntry();
         }
+        zis.close();
+        zis.closeEntry();
 
         return null;
     }

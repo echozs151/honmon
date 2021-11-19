@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,6 +44,7 @@ import javax.imageio.ImageIO;
 import com.example.honmon.services.ZipService;
 import com.example.honmon.storage.StorageService;
 import com.example.honmon.storage.StoredFile;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -63,10 +65,14 @@ public class Book { // extends AbstractEntity {
     private String title;
     private String author;
     private String category;
+    private String collection;
     private List<String> tags;
     private String description;
     private String fileType;
     private String fileExtension;
+    private Date lastAccess;
+    private String progress;
+    private String totalPages;
     @DBRef() StoredFile book;
     private String bookId;
     @DBRef() StoredFile thumbnail;
@@ -77,6 +83,38 @@ public class Book { // extends AbstractEntity {
     @Autowired
     public void setStorageService(StorageService<StoredFile> storageService) {
         this.storageService = storageService;
+    }
+
+    public String getCollection() {
+        return collection;
+    }
+
+    public void setCollection(String collection) {
+        this.collection = collection;
+    }
+
+    public String getTotalPages() {
+        return totalPages;
+    }
+
+    public void setTotalPages(String totalPages) {
+        this.totalPages = totalPages;
+    }
+
+    public String getProgress() {
+        return progress;
+    }
+
+    public void setProgress(String progress) {
+        this.progress = progress;
+    }
+
+    public Date getLastAccess() {
+        return lastAccess;
+    }
+
+    public void setLastAccess(Date lastAccess) {
+        this.lastAccess = lastAccess;
     }
 
     public String getFileExtension() {
@@ -120,16 +158,19 @@ public class Book { // extends AbstractEntity {
     }
 
     public String getBookId() {
-        this.bookId = this.book.getId().toString();
+        if (this.book != null) {
+            this.bookId = this.book.getId().toString();
+        }
+        
         return this.bookId;
     }
 
     public String getThumbnailId() {
-        if (this.thumbnail != null) {
+        if (this.thumbnail != null && this.thumbnail.getId() != null) {
             this.thumbnailId = this.thumbnail.getId().toString();
             return this.thumbnailId;
         } else {
-            return null;
+            return this.thumbnailId;
         }
         
     }

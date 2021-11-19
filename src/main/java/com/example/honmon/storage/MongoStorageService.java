@@ -31,6 +31,7 @@ import com.mongodb.client.gridfs.model.GridFSFile;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.Resource;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -106,6 +107,7 @@ public class MongoStorageService implements StorageService<StoredFile> {
     }
 
     @Override
+    @Cacheable("file")
     public StoredFile load(String id) throws IOException {
         GridFSFile gridFSFile = template.findOne( new Query(Criteria.where("_id").is(id)) );
 
