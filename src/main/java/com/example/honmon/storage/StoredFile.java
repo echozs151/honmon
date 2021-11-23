@@ -83,6 +83,23 @@ public class StoredFile {
         this.id = id;
     }
 
+    public static String findContentType(String extension)
+    {
+        switch(extension) {
+            case "cbz":
+            case "cbr":
+                return "application/octet-stream";
+            case "pdf":
+                return "application/pdf";
+            case "epub":
+                return "application/epub+zip";
+            case "mobi":
+                return "application/x-mobipocket-ebook";
+            default:
+                return "";
+        }
+    }
+
     
 
 }

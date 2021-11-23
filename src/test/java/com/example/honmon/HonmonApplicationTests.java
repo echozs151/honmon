@@ -6,12 +6,15 @@ import com.example.honmon.services.ImportService;
 import com.example.honmon.services.ZipService;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
 @SpringBootTest
 class HonmonApplicationTests {
+	@Autowired
+	ImportService importService;
 
 	@Test
 	void contextLoads() throws IOException {
@@ -31,7 +34,13 @@ class HonmonApplicationTests {
 	@Test
 	void importLibraryTest()
 	{
-		ImportService.importBooks("/");
+		
+		try {
+			importService.importBooks("F:\\Media\\Books");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

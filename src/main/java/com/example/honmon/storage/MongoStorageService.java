@@ -24,6 +24,8 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.stream.Stream;
+import java.util.zip.CRC32;
+import java.util.zip.CheckedInputStream;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -83,18 +85,17 @@ public class MongoStorageService implements StorageService<StoredFile> {
     @Override
     public String storeBytes(InputStream input, long length, String name, String contentType) {
         DBObject metadata = new BasicDBObject();
+        // CheckedInputStream checkedInputStream = new CheckedInputStream(input, new CRC32());
+        // byte[] buffer = new byte[256];
+        int size = 0;
         try {
-            metadata.put("fileSize", input.available());
-        } catch (IOException e) {
-            e.printStackTrace();
+            size = input.available();
+            // while (checkedInputStream.read(buffer, 0, buffer.length) >= 0) {}
+            // Long chksm = checkedInputStream.getChecksum().getValue();
+            metadata.put("fileSize", size);
+        } catch (IOException e2) {
+            e2.printStackTrace();
         }
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            // metadata.put("checksum", md.digest(input.readAllBytes()).toString());
-        } catch (NoSuchAlgorithmException e1) {
-            e1.printStackTrace();
-        }
-
         Object fileID;
         fileID = template.store(input, name, contentType, metadata);
         return fileID.toString();
