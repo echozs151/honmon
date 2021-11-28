@@ -29,7 +29,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 
-
 @SpringBootApplication
 @EnableConfigurationProperties(StorageProperties.class)
 @EnableCaching
@@ -47,7 +46,7 @@ public class HonmonApplication {
 	// 	return new WebMvcConfigurer() {
 	// 		@Override
 	// 		public void addCorsMappings(CorsRegistry registry) {
-	// 			registry.addMapping("*").allowedOrigins("http://localhost:8081/");
+	// 			registry.addMapping("/api/**").allowedOrigins("*");
 	// 		}
 	// 	};
 	// }

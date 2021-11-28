@@ -34,13 +34,6 @@ class HonmonApplicationTests {
 	@Test
 	void importLibraryTest()
 	{
-		
-		try {
-			importService.importBooks("F:\\Media\\Books");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 }
