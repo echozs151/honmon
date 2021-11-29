@@ -21,6 +21,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,8 +52,10 @@ public class ResourceServeController {
     }
 
     @GetMapping("book-preview/{id}")
+    @CrossOrigin
     public void getBookPreview(HttpServletResponse response, @PathVariable String id) throws IOException {
-        Book book = bookRepository.findById(id);
+        String[] parseId = id.split("\\.(?=[^\\.]+$)");
+        Book book = bookRepository.findById(parseId[0]);
         var fileRef = storageService.load(book.getBook().getId().toString());
         response.setContentType(fileRef.getFileType());
         StreamUtils.copy(new ByteArrayInputStream(fileRef.getFile()), response.getOutputStream());
